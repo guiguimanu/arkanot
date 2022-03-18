@@ -58,3 +58,8 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+Arkanot/Library
+Arkanot/Logs
+Arkanot/obj
+Arkanot/UserSettings
+Arkanot/.vsconfig

@@ -12,27 +12,40 @@ namespace Arkanot.GameLogic.Actors
         private Rigidbody2D rigidBody2D;
         private Vector2 targetPosition;
         private float speed=20;
-        private float currentWidth=1;
-        private TouchToWorld touchInput;
+
+        [SerializeField]
+        private ParticleSystem psOnDie;
+        [SerializeField]
+        private Transform xfSprites;
+
         #endregion
-        
+
+        #region properties
+        //used for testing
+        public TouchToWorld TouchInput { get; private set; }
+        public float CurrentWidth { get; private set; }
+
+        #endregion
+
+
         #region private methods
         private void Awake()
         {
             mainCamera = Camera.main;
             rigidBody2D = GetComponent<Rigidbody2D>();
-            touchInput = new TouchToWorld(mainCamera);
+            TouchInput = new TouchToWorld(mainCamera);
+            CurrentWidth = 1;
         }
 
         private void Update()
         {
-            touchInput.ProcessInput();
+            TouchInput.ProcessInput();
         }
 
         private void FixedUpdate()
         {
-            if (touchInput.IsTouching)
-                targetPosition = touchInput.LastKnownPosition;
+            if (TouchInput.IsTouching)
+                targetPosition = TouchInput.LastKnownPosition;
 
             //dont move panel on the y axis of course
             targetPosition.y = rigidBody2D.position.y;
@@ -42,7 +55,7 @@ namespace Arkanot.GameLogic.Actors
 
         private void RefreshWidth()
         {
-            transform.DOScaleX(currentWidth,0.25f);
+            transform.DOScaleX(CurrentWidth, 0.25f);
         }
         #endregion
 
@@ -54,14 +67,31 @@ namespace Arkanot.GameLogic.Actors
 
         public float ReflectionFactor(Vector2 ballPosition)
         {
-            return (ballPosition.x - rigidBody2D.position.x) / currentWidth;
+            return (ballPosition.x - rigidBody2D.position.x) / CurrentWidth;
         }
 
         public void SetCurrentWidth(float width)
         {
-            currentWidth = width;
+            CurrentWidth = width;
             RefreshWidth();
         }
+
+        public void OverrideSpeed(float speed)
+        {
+            this.speed = speed;
+        }
+
+        public void Implode()
+        {
+            xfSprites.DOScale(1.5f, 0.25f).SetDelay(1.0f).OnComplete(() =>
+            {
+                xfSprites.DOScale(0, 0.25f).OnComplete(() =>
+                {
+                    psOnDie.Play();
+                });
+            });
+        }
+
         #endregion
     }
 }

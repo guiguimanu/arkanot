@@ -35,4 +35,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Arkanot/Scenes/Levels/Level 8.unity
     guid: ad945841cb1671a4597de70fe8d18230
+  - enabled: 1
+    path: Assets/_Arkanot/Scenes/Levels/Level 9.unity
+    guid: 1003d1f1726e4cd44b49067ea7047784
+  - enabled: 1
+    path: Assets/_Arkanot/Scenes/Levels/Level 10.unity
+    guid: 6af6bf17d43f18a479e41a3e1a19dbd6
+  - enabled: 1
+    path: Assets/_Arkanot/Scenes/Levels/Level 11.unity
+    guid: 2dbf5a01dbbde6549bb54e398a3abeb1
+  - enabled: 1
+    path: Assets/_Arkanot/Scenes/Levels/Level 12.unity
+    guid: 71a463bb77378ca4da0913b14948f5e2
   m_configObjects: {}

@@ -6,8 +6,10 @@ namespace Arkanot.Input
 {
     public class TouchToWorld 
     {
+        private bool overridingInput;
+
         private Camera camera;
-    
+
         public Vector2 LastKnownPosition { get; private set; }
 
         public bool IsTouching { get; private set; }
@@ -20,9 +22,12 @@ namespace Arkanot.Input
         {
             this.camera = camera;
         }
-
+        
         public void ProcessInput()
         {
+            if (overridingInput)
+                return;
+
             if (UInput.touchCount == 0)
             {
                 IsTouching = false;
@@ -32,7 +37,20 @@ namespace Arkanot.Input
             LastKnownPosition = camera.ScreenToWorldPoint(UInput.GetTouch(0).position);
             IsTouching = true;
         }
-    
+
+        #region methods for testing
+        public void StopOverride()
+        {
+            IsTouching = false;
+            overridingInput = false;
+        }
+        public void OverideInput(Vector2 worldPosition)
+        {
+            IsTouching = true;
+            overridingInput = true;
+            LastKnownPosition = worldPosition;
+        }
+        #endregion
     }
 
 }

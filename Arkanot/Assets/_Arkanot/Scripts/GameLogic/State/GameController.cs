@@ -18,7 +18,7 @@ namespace Arkanot.GameLogic
         
         [Header("UI References")]
         [SerializeField]
-        private CanvasGroup cgLaunchHint;
+        private LaunchHint launchHint;
         [SerializeField]
         private GameOverPanel gameOverPanel;
         [SerializeField]
@@ -39,8 +39,9 @@ namespace Arkanot.GameLogic
         public Paddle Paddle { get { return gameState.paddle; } }
         public GameObject GoVoid { get { return gameState.goVoid; } }
         public State CurrentState { get { return gameState.CurrentState; } }
-        public int Lives { get; set; }
-        
+        public LaunchHint LaunchHint { get { return launchHint; } }
+        public Input.SwipeUpDetector SwipeUpDetector { get { return gameState.swipeDetector; } }
+        public GameObject BallPrefab { get { return ballPrefab; } }
         #endregion
 
         #region private methods
@@ -52,16 +53,10 @@ namespace Arkanot.GameLogic
 
         private void Start()
         {
-            Lives = 3;
-            SpawnBall();
-            
-            cgLaunchHint.DOFade(1.0f, 0.5f).SetLoops(-1, LoopType.Yoyo);
+            gameState.Lives = 3;
+            gameState.ChangeState(State.Launch);
         }
 
-        private void SpawnBall()
-        {
-            gameState.AssignBall(Instantiate(ballPrefab));
-        }
         
         private void Update()
         {
@@ -71,29 +66,19 @@ namespace Arkanot.GameLogic
         #endregion
 
         #region public methods
-
-        public void HideLaunchHint()
-        {
-            cgLaunchHint.DOKill();
-            cgLaunchHint.DOFade(0, 0.2f);
-        }
-
+        
         public void OnBallDeath()
         {
-            lifeDisplay.RemoveHeartAt(Lives-1);
-            Lives--;
+            gameState.Lives--;
+            lifeDisplay.RemoveHeartAt(gameState.Lives);
 
-            if (Lives > 0)
+            if (gameState.Lives > 0)
             {
-                gameState.ChangeToLaunch();
-                Destroy(CurrentBall.gameObject);
-                SpawnBall();
-                
-                cgLaunchHint.DOFade(1.0f, 0.5f).SetLoops(-1, LoopType.Yoyo);
+                gameState.ChangeState(State.Launch);
             }
             else
             {
-                gameState.ChangeToLost();
+                gameState.ChangeState(State.Lost);
                 gameOverPanel.ShowLoss(this);
             }
 
@@ -101,13 +86,13 @@ namespace Arkanot.GameLogic
 
         public void OnAllBricksCleared()
         {
-            gameState.ChangeToWin();
-            CurrentBall.StopAndImplode();
+            gameState.ChangeState(State.Win);
+
             gameOverPanel.ShowWin(this);
             psCelebration.Play();
 
             if(_levelNumber>0)
-                LevelProgressData.UpdateScore(_levelNumber, Lives);
+                LevelProgressData.UpdateScore(_levelNumber, gameState.Lives);
         }
 
         public void AddPowerUp(PowerUpBrick powerUp)
@@ -115,6 +100,11 @@ namespace Arkanot.GameLogic
             gameState.powerUpCtrl.AddPowerUp(powerUp);
         }
     
+        /// <summary>
+        /// Moves the void up and make it a solid
+        /// You are now a GOD
+        /// Use it wiseley
+        /// </summary>
         [ContextMenu("God Mode")]
         public void GodMode()
         {

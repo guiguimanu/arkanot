@@ -12,6 +12,11 @@ namespace Arkanot.Input
         private float fAccumulator;
         private readonly float fMaginitudeRequirement;
         private readonly float fSwipeTimeLimit;
+        private bool hasReset = false;
+
+        #region methods for testing
+        public bool OverrideInput { get; set; }
+        #endregion
 
         /// <summary>
         /// Detect a swipe up based on screen height and time limit
@@ -29,12 +34,16 @@ namespace Arkanot.Input
 
         private void OnTouchBegin(Touch touch)
         {
+            hasReset = false;
             v2FirstPressPos = new Vector2(touch.position.x, touch.position.y);
             fAccumulator = 0;
         }
 
         private bool OnTouchMoved(Touch touch)
         {
+            if (hasReset)
+                return false;
+
             fAccumulator += Time.deltaTime;
 
             v2SecondPressPos = new Vector2(touch.position.x, touch.position.y);
@@ -61,6 +70,7 @@ namespace Arkanot.Input
             v2SecondPressPos = new Vector2();
             v2CurrentSwipe = new Vector2();
             fAccumulator = 0;
+            hasReset = true;
         }
         
         /// <summary>
@@ -69,6 +79,9 @@ namespace Arkanot.Input
         /// <returns></returns>
         public bool ListenForSwipeUp()
         {
+            if (OverrideInput)
+                return true;
+
             if (UInput.touchCount == 0)
                 return false;
 
@@ -82,11 +95,11 @@ namespace Arkanot.Input
                     OnTouchBegin(touch);
                     break;
                 case TouchPhase.Moved:
+                case TouchPhase.Stationary:
                     swipeDetected = OnTouchMoved(touch);
                     break;
                 case TouchPhase.Ended:
                 case TouchPhase.Canceled:
-                case TouchPhase.Stationary:
                 default:
                     Reset();
                     break;
@@ -96,6 +109,8 @@ namespace Arkanot.Input
         }
 
         #endregion
+
+
     }
 
 }

@@ -9,22 +9,26 @@ namespace Arkanot.GameLogic
     public class GameState
     {
         #region private variables
+        //SerializeField is set for inspector visibility. Not strictly neccessary
         [SerializeField]
         private State _currentState;
         private GameController gameController;
         #endregion
 
         #region public variables
+        public PowerUpController powerUpCtrl;
+        public SwipeUpDetector swipeDetector;
+
+        [Header("Actors")]
         public Paddle paddle;
         public BrickList brickList;
         public GameObject goVoid;
-        public PowerUpController powerUpCtrl;
-        public SwipeUpDetector swipeDetector;
         #endregion
 
         #region properties
         public Ball CurrentBall { get; private set; }
         public State CurrentState { get { return _currentState; } }
+        public int Lives { get; set; }
         #endregion
 
         #region private methods
@@ -51,35 +55,10 @@ namespace Arkanot.GameLogic
                 CurrentBall.Nudge();
         }
 
-
-        #endregion
-
-        #region state changes
-        public void ChangeToPlaying()
+        private void AssignBall(GameObject goBall)
         {
-            _currentState = State.Playing;
-            CurrentBall.Launch();
-
-            gameController.HideLaunchHint();
-        }
-
-        public void ChangeToLaunch()
-        {
-            _currentState = State.Launch;
-            swipeDetector.Reset();
-
-            GameObject.Destroy(CurrentBall.gameObject);
-        }
-
-        public void ChangeToLost()
-        {
-            _currentState = State.Lost;
-        }
-
-        public void ChangeToWin()
-        {
-            _currentState = State.Win;
-
+            CurrentBall = goBall.GetComponent<Ball>();
+            CurrentBall.SetGameController(gameController);
         }
 
         #endregion
@@ -96,11 +75,43 @@ namespace Arkanot.GameLogic
             powerUpCtrl = new PowerUpController(gameController);
             _currentState = State.Launch;
         }
-        
-        public void AssignBall(GameObject goBall)
+
+        public void ChangeState(State state)
         {
-            CurrentBall = goBall.GetComponent<Ball>();
-            CurrentBall.SetGameController(gameController);
+            _currentState = state;
+            
+            //On State Enter
+            switch (state)
+            {
+                case State.Launch:
+
+                    swipeDetector.Reset();
+                    if(CurrentBall!=null)
+                        GameObject.Destroy(CurrentBall.gameObject);
+
+                    AssignBall(GameObject.Instantiate(gameController.BallPrefab));
+                    gameController.LaunchHint.ShowHint();
+
+                    break;
+                case State.Playing:
+
+                    CurrentBall.Launch();
+                    gameController.LaunchHint.HideHint();
+
+                    break;
+                case State.Win:
+
+                    CurrentBall.StopAndImplode();
+
+                    break;
+                case State.Lost:
+
+                    paddle.Implode();
+
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void Update()
@@ -112,7 +123,7 @@ namespace Arkanot.GameLogic
                     MoveBallWithPaddle();
 
                     if (swipeDetector.ListenForSwipeUp())
-                        ChangeToPlaying();
+                        ChangeState(State.Playing);
 
 
                     break;

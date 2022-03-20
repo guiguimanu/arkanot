@@ -8,6 +8,8 @@ namespace Arkanot.GameLogic.UI
     public class EndGamePanel : MonoBehaviour
     {
         #region private variables
+        private int currentLevel;
+
         [SerializeField]
         private CanvasGroup canvasGroup;
         [SerializeField]
@@ -17,7 +19,6 @@ namespace Arkanot.GameLogic.UI
         [SerializeField]
         private GameObject goNextLevelButton;
 
-        private int currentLevel;
         #endregion
 
         #region public methods

@@ -7,32 +7,27 @@ namespace Arkanot.GameLogic.Actors
     public class Brick : MonoBehaviour
     {
         #region private fields
+        private BrickList brickList;
+
         [SerializeField]
         private SpriteRenderer spriteRenderer;
-
         [SerializeField]
         private SpriteRenderer spriteRendererShadow;
-
         [SerializeField]
         private GameObject prefabOnHit;
-
         [SerializeField]
         private ParticleSystem psOnDie;
-
         [SerializeField]
         private Color[] lifeColors;
-
         [SerializeField]
         private int lives;
-    
-        private PowerUpBrick powerUp;
-
-        private BrickList brickList;
 
         #endregion
         
         #region properties
-        public PowerUpBrick PowerUp { get { return powerUp; } }
+
+        public PowerUpBrick PowerUp { get; private set; }
+
         #endregion
 
         #region private methods
@@ -43,21 +38,24 @@ namespace Arkanot.GameLogic.Actors
 
             brickList = GetComponentInParent<BrickList>();
 
-            powerUp = GetComponent<PowerUpBrick>();
+            PowerUp = GetComponent<PowerUpBrick>();
         }
 
         private void RefreshColor()
         {
+            spriteRenderer.DOKill();
             spriteRenderer.color = lifeColors[lives-1];
         }
 
         private void TweenColor()
         {
+            spriteRenderer.DOKill();
             spriteRenderer.DOColor(lifeColors[lives - 1],0.5f);
         }
 
         private void TweenHit(Vector2 v2Dir)
         {
+            spriteRenderer.transform.DOKill();
             spriteRenderer.transform.DOLocalMove(-v2Dir * 0.1f, 0.1f).OnComplete(() =>
             {
                 spriteRenderer.transform.localPosition = Vector2.zero;
@@ -79,7 +77,10 @@ namespace Arkanot.GameLogic.Actors
             GetComponent<Collider2D>().enabled = false;
             SetParticleColor();
             psOnDie.Play();
-        
+
+            spriteRenderer.DOKill();
+            spriteRendererShadow.DOKill();
+
             spriteRendererShadow.DOFade(0, 0.2f).SetDelay(0.1f);
             spriteRenderer.DOFade(0, 0.25f).SetDelay(0.1f).OnComplete(() =>
             {

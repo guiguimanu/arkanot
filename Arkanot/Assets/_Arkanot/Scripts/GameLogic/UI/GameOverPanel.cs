@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 namespace Arkanot.GameLogic.UI
@@ -12,6 +13,8 @@ namespace Arkanot.GameLogic.UI
         private Transform xfOrigin;
         [SerializeField]
         private TextMeshProUGUI txtText;
+        [SerializeField]
+        private Image bgPanel;
         [SerializeField]
         private Color colorWin;
         [SerializeField]
@@ -32,15 +35,8 @@ namespace Arkanot.GameLogic.UI
 
             txtText.transform.DOMove(xfTarget.position, 4.0f);
 
-            if (win)
-            {
-                txtText.color = colorWin;
-            }
-            else
-            {
-                txtText.color = colorLose;
-            }
-
+            bgPanel.color = win ? colorWin : colorLose;
+            
             canvasGroup.DOFade(1.0f, 1.0f).OnComplete(() =>
             {
                 endGamePanel.ShowPanel(gameController);

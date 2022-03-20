@@ -5,9 +5,10 @@ namespace Arkanot.GameLogic.UI
 {
     public class LaunchHint : MonoBehaviour
     {
+        private Animator anim;
+
         [SerializeField]
         private CanvasGroup canvasGroup;
-        private Animator anim;
 
         private void Awake()
         {
@@ -20,6 +21,13 @@ namespace Arkanot.GameLogic.UI
             canvasGroup.DOKill();
             canvasGroup.DOFade(1, 0.2f);
             anim.enabled = true;
+        }
+
+        public void FollowPaddle(Transform xfPaddle)
+        {
+            Vector2 pos = transform.position;
+            pos.x = xfPaddle.position.x;
+            transform.position = pos;
         }
 
         public void HideHint()

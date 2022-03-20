@@ -7,7 +7,6 @@ namespace Arkanot.GameLogic.Actors
     public class Paddle : MonoBehaviour
     {
         #region private fields
-        private GameController gameController;
         private Camera mainCamera;
         private Rigidbody2D rigidBody2D;
         private Vector2 targetPosition;
@@ -21,7 +20,6 @@ namespace Arkanot.GameLogic.Actors
         #endregion
 
         #region properties
-        //used for testing
         public TouchToWorld TouchInput { get; private set; }
         public float CurrentWidth { get; private set; }
 
@@ -60,10 +58,6 @@ namespace Arkanot.GameLogic.Actors
         #endregion
 
         #region public methods
-        public void SetGameController(GameController gameController)
-        {
-            this.gameController = gameController;
-        }
 
         public float ReflectionFactor(Vector2 ballPosition)
         {

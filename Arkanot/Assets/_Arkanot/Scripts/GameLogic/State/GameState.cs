@@ -9,51 +9,34 @@ namespace Arkanot.GameLogic
     public class GameState
     {
         #region private variables
+        private GameController gameController;
+
         //SerializeField is set for inspector visibility. Not strictly neccessary
         [SerializeField]
         private State _currentState;
-        private GameController gameController;
         #endregion
-
-        #region public variables
-        public PowerUpController powerUpCtrl;
-        public SwipeUpDetector swipeDetector;
-
-        [Header("Actors")]
-        public Paddle paddle;
-        public BrickList brickList;
-        public GameObject goVoid;
-        #endregion
-
+        
         #region properties
-        public Ball CurrentBall { get; private set; }
-        public State CurrentState { get { return _currentState; } }
         public int Lives { get; set; }
+        public SwipeUpDetector SwipeUpDetector { get; private set; }
+        public PowerUpController PowerUpController { get; private set; }
+        public Ball CurrentBall { get; private set; }
+        
+        public State CurrentState { get { return _currentState; } }
+        public Paddle Paddle { get { return gameController.Paddle; } }
+        public UI.LaunchHint LaunchHint { get { return gameController.LaunchHint; } }
         #endregion
+
+        public GameState(GameController gameController)
+        {
+            this.gameController = gameController;
+            SwipeUpDetector = new SwipeUpDetector(100, 0.25f);
+            PowerUpController = new PowerUpController(gameController);
+            _currentState = State.Intro;
+        }
 
         #region private methods
 
-        private void MoveBallWithPaddle()
-        {
-            if (CurrentBall == null)
-                return;
-
-            Vector3 pos = paddle.transform.position;
-            pos.y += 0.4f;
-
-            CurrentBall.transform.position = pos;
-        }
-
-        /// <summary>
-        /// Edge case where the ball stays at 0 y velocity forever
-        /// This happens when it hits the roof with a low y velocity
-        /// Solution? Nudge it!
-        /// </summary>
-        private void NudgeBallIfStuck()
-        {
-            if (CurrentBall.IsStuck())
-                CurrentBall.Nudge();
-        }
 
         private void AssignBall(GameObject goBall)
         {
@@ -64,18 +47,7 @@ namespace Arkanot.GameLogic
         #endregion
 
         #region public methods
-
-        public void SetGameController(GameController gameController)
-        {
-            this.gameController = gameController;
-
-            paddle.SetGameController(gameController);
-            brickList.SetGameController(gameController);
-            swipeDetector = new SwipeUpDetector(0.15f, 0.25f);
-            powerUpCtrl = new PowerUpController(gameController);
-            _currentState = State.Launch;
-        }
-
+        
         public void ChangeState(State state)
         {
             _currentState = state;
@@ -83,20 +55,22 @@ namespace Arkanot.GameLogic
             //On State Enter
             switch (state)
             {
+                case State.Intro:
+                    break;
                 case State.Launch:
 
-                    swipeDetector.Reset();
+                    SwipeUpDetector.Reset();
                     if(CurrentBall!=null)
                         GameObject.Destroy(CurrentBall.gameObject);
 
-                    AssignBall(GameObject.Instantiate(gameController.BallPrefab));
-                    gameController.LaunchHint.ShowHint();
+                    AssignBall(gameController.SpawnBall());
+                    LaunchHint.ShowHint();
 
                     break;
                 case State.Playing:
 
                     CurrentBall.Launch();
-                    gameController.LaunchHint.HideHint();
+                    LaunchHint.HideHint();
 
                     break;
                 case State.Win:
@@ -106,7 +80,7 @@ namespace Arkanot.GameLogic
                     break;
                 case State.Lost:
 
-                    paddle.Implode();
+                    Paddle.Implode();
 
                     break;
                 default:
@@ -118,19 +92,23 @@ namespace Arkanot.GameLogic
         {
             switch (_currentState)
             {
+                case State.Intro:
+                    break;
                 case State.Launch:
 
-                    MoveBallWithPaddle();
+                    CurrentBall.FollowPaddle();
 
-                    if (swipeDetector.ListenForSwipeUp())
+                    LaunchHint.FollowPaddle(Paddle.transform);
+
+                    if (SwipeUpDetector.ListenForSwipeUp())
                         ChangeState(State.Playing);
 
 
                     break;
                 case State.Playing:
 
-                    powerUpCtrl.Update();
-                    NudgeBallIfStuck();
+                    PowerUpController.Update();
+                    CurrentBall.NudgeBallIfStuck();
 
                     break;
                 case State.Win:

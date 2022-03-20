@@ -2,6 +2,7 @@
 {
     public enum State
     {
+        Intro,
         Launch,
         Playing,
         Win,

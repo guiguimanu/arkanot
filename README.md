@@ -42,7 +42,9 @@ Below is a representation of the Gameobject hierarchy for a level
     - Walls - Need something to bounce off. Note: this has the *void* as a child also
   - UI
     - Game End Canvas - includes *GameOver* Text and end game *buttons*
-    - UI Canvas - includes Hearts display and launch hint
+    - HUD Canvas - HUD UI such as Hearts display
+    - Launch Hint Canvas - has the swipe up animation in world space
+    - Level Intro Canvas - Shows the level name on level start
   - Brick List - All bricks in the level must be placed as a child of this object
 
 Everything is parented under a Game Controller object that is a prefab. The reason for this is to avoid having to change references in every level upon refactoring. Keep in mind that the only thing that changes between levels is:
@@ -82,7 +84,7 @@ With the exception of Unity's internal *Event System* the custom input classes a
 
 # How To Create A Level
 
-A level can be created in x simple steps
+A level can be created in 8 simple steps
 1. Duplicate Assets/_Arkanot/Scenes/Testing/Level Template.unity
 2. Name it **"Level {level number}"** and place it in Assets/_Arkanot/Scenes/Levels to stay organized
 3. Open it and select the **== Game Controller ==** object
@@ -97,14 +99,12 @@ You are done! Enjoy your custom level!
 
 # Future Improvements / TODO
 
-- [x] Add Swipe Animation Instead Of Text Hint
-- [x] Change Scene layout to have game controller prefab as parent
-- [x] Implement some tests
-- [x] Made assemblies 
 - [ ] Add a back to selection screen button in-game
 - [ ] Add a current power up display
 - [ ] A level building feature would be really cool
-
+- [ ] Add sound fx
+- [ ] Add Music
+- [ ] More Unit Tests
 
 # Dependencies and Attributions
 

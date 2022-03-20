@@ -56,6 +56,17 @@ namespace Arkanot.GameLogic.Actors
             }
         }
 
+        private bool IsStuck()
+        {
+            return rigidBody2D.velocity.y == 0;
+        }
+
+        private void Nudge()
+        {
+            Vector2 newDir = new Vector2(rigidBody2D.velocity.normalized.x, -1);
+            rigidBody2D.velocity = newDir * speed;
+
+        }
 
         #endregion
 
@@ -78,6 +89,14 @@ namespace Arkanot.GameLogic.Actors
             rigidBody2D.velocity = rigidBody2D.velocity.normalized * speed;
         }
 
+        public void FollowPaddle()
+        {
+            Vector3 pos = gameController.Paddle.transform.position;
+            pos.y += 0.4f;
+
+            transform.position = pos;
+        }
+
         public void StopAndImplode()
         {
             rigidBody2D.velocity = Vector2.zero;
@@ -91,17 +110,18 @@ namespace Arkanot.GameLogic.Actors
             });
         }
 
-        public bool IsStuck()
+        /// <summary>
+        /// Edge case where the ball stays at 0 y velocity forever
+        /// This happens when it hits the roof with a low y velocity
+        /// Solution? Nudge it!
+        /// </summary>
+        public void NudgeBallIfStuck()
         {
-            return rigidBody2D.velocity.y == 0;
+            if (IsStuck())
+                Nudge();
         }
 
-        public void Nudge()
-        {
-            Vector2 newDir = new Vector2(rigidBody2D.velocity.normalized.x, -1);
-            rigidBody2D.velocity = newDir * speed;
 
-        }
         #endregion
     }
 }

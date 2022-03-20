@@ -7,11 +7,9 @@ namespace Arkanot.Input
     public class TouchToWorld 
     {
         private bool overridingInput;
-
         private Camera camera;
 
         public Vector2 LastKnownPosition { get; private set; }
-
         public bool IsTouching { get; private set; }
 
         /// <summary>

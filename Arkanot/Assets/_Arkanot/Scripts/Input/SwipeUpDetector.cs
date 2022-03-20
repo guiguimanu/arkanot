@@ -19,13 +19,13 @@ namespace Arkanot.Input
         #endregion
 
         /// <summary>
-        /// Detect a swipe up based on screen height and time limit
+        /// Detect a swipe up based on pixel height and time limit
         /// </summary>
-        /// <param name="swipeToScreenHeightRatio"> The desired minimum swipe length as a ratio of the screen height </param>
+        /// <param name="pixelRequirement"> The desired minimum swipe length as a ratio of the screen height </param>
         /// <param name="timeLimit"> The maximum time acceptable for a swipe detection in seconds</param>
-        public SwipeUpDetector(float swipeToScreenHeightRatio, float timeLimit)
+        public SwipeUpDetector(float pixelRequirement, float timeLimit)
         {
-            fMaginitudeRequirement = Screen.height * swipeToScreenHeightRatio;
+            fMaginitudeRequirement = pixelRequirement;
             fSwipeTimeLimit = timeLimit;
             Reset();
         }

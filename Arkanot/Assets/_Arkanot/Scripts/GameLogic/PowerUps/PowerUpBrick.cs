@@ -6,7 +6,6 @@ namespace Arkanot.GameLogic.PowerUps
     {
         [SerializeField]
         private PowerUpEnum _powerUpType;
-
         [SerializeField]
         private Transform xfIconParents;
 

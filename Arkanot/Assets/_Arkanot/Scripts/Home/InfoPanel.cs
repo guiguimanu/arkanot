@@ -5,10 +5,11 @@ namespace Arkanot.Home
 {
     public class InfoPanel : MonoBehaviour
     {
+        private RectTransform xfInfo;
+        private Vector2 v2TargetInfoPos;
+
         [SerializeField]
         private CanvasGroup canvasGroup;
-        private Vector2 v2TargetInfoPos;
-        private RectTransform xfInfo;
 
         private void Start()
         {

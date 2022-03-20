@@ -66,6 +66,22 @@ namespace Arkanot.Data
         {
             PlayerPrefs.DeleteAll();
         }
+
+        /// <summary>
+        /// Check if there is any data at all
+        /// Note: Used mainly for testing
+        /// </summary>
+        public static bool HasData()
+        {
+            for (int i = 1; i <= NumberOfLevels; i++)
+            {
+                //if any data at all return true
+                if (PlayerPrefs.HasKey(LevelDataKey(i)))
+                    return true;
+            }
+
+            return false;
+        }
     }
 
 }

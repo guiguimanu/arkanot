@@ -12,21 +12,32 @@ namespace Arkanot.GameLogic
         [Tooltip("This will be used for data saving, please make sure you have the correct level configured here")]
         [SerializeField]
         private int _levelNumber = -100;
-
         [SerializeField]
         private GameState gameState;
-        
+
+        [Header("Actors")]
+        [SerializeField]
+        private Paddle _paddle;
+        [SerializeField]
+        private BrickList _brickList;
+        [SerializeField]
+        private GameObject _goVoid;
+
         [Header("UI References")]
         [SerializeField]
-        private LaunchHint launchHint;
+        private LevelIntroUI levelIntroUI;
+        [SerializeField]
+        private LaunchHint _launchHint;
         [SerializeField]
         private GameOverPanel gameOverPanel;
         [SerializeField]
         private LifeDisplay lifeDisplay;
 
-        [Header("Other References")]
+        [Header("Prefabs")]
         [SerializeField]
-        private GameObject ballPrefab;
+        private GameObject _ballPrefab;
+
+        [Header("Effects")]
         [SerializeField]
         private ParticleSystem psCelebration;
         
@@ -35,29 +46,29 @@ namespace Arkanot.GameLogic
         #region properties
 
         public int LevelNumber { get { return _levelNumber; } }
+        public Paddle Paddle { get { return _paddle; } }
+        public GameObject GoVoid { get { return _goVoid; } }
+        public LaunchHint LaunchHint { get { return _launchHint; } }
+        public GameObject BallPrefab { get { return _ballPrefab; } }
         public Ball CurrentBall { get { return gameState.CurrentBall; } }
-        public Paddle Paddle { get { return gameState.paddle; } }
-        public GameObject GoVoid { get { return gameState.goVoid; } }
         public State CurrentState { get { return gameState.CurrentState; } }
-        public LaunchHint LaunchHint { get { return launchHint; } }
-        public Input.SwipeUpDetector SwipeUpDetector { get { return gameState.swipeDetector; } }
-        public GameObject BallPrefab { get { return ballPrefab; } }
+        public Input.SwipeUpDetector SwipeUpDetector { get { return gameState.SwipeUpDetector; } }
         #endregion
 
         #region private methods
 
         private void Awake()
         {
-            gameState.SetGameController(this);
+            gameState = new GameState(this);
+            _brickList.SetGameController(this);
         }
 
         private void Start()
         {
             gameState.Lives = 3;
-            gameState.ChangeState(State.Launch);
+            levelIntroUI.ShowIntro(_levelNumber, () => gameState.ChangeState(State.Launch));
         }
 
-        
         private void Update()
         {
             gameState.Update();
@@ -97,9 +108,14 @@ namespace Arkanot.GameLogic
 
         public void AddPowerUp(PowerUpBrick powerUp)
         {
-            gameState.powerUpCtrl.AddPowerUp(powerUp);
+            gameState.PowerUpController.AddPowerUp(powerUp);
         }
     
+        public GameObject SpawnBall()
+        {
+            return Instantiate(BallPrefab);
+        }
+
         /// <summary>
         /// Moves the void up and make it a solid
         /// You are now a GOD
@@ -108,11 +124,11 @@ namespace Arkanot.GameLogic
         [ContextMenu("God Mode")]
         public void GodMode()
         {
-            Vector2 v2Pos = gameState.goVoid.transform.position;
+            Vector2 v2Pos = _goVoid.transform.position;
             v2Pos.y = -6.5f;
-            gameState.goVoid.transform.position = v2Pos;
+            _goVoid.transform.position = v2Pos;
 
-            gameState.goVoid.GetComponent<Collider2D>().isTrigger = false;
+            _goVoid.GetComponent<Collider2D>().isTrigger = false;
         }
 
         #endregion

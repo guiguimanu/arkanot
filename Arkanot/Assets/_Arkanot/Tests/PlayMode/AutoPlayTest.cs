@@ -31,6 +31,10 @@ public class AutoPlayTest
 
             while (gameController.CurrentState != State.Lost)
             {
+                //wait for intro to end
+                while (gameController.CurrentState == State.Intro)
+                    yield return null;
+
                 //lets play
                 swipeUpDetector.OverrideInput = true;
 
@@ -100,6 +104,10 @@ public class AutoPlayTest
             while(gameController.CurrentState!=State.Win)
             {
                 attempts++;
+
+                //wait for intro to end
+                while (gameController.CurrentState == State.Intro)
+                    yield return null;
 
                 swipeUpDetector.OverrideInput = true;
 
